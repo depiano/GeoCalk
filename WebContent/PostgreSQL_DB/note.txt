@@ -1,0 +1,8 @@
+Crea il database in PostgreSQL
+
+Crea le tabelle, incollando un po' alla volta il codice presente in citibike.sql
+
+Importa il file dataset/bike.csv nella tabella BIKE
+Importa il file dataset/station.csv nella tabella STATION
+Importa il file dataset/trip.csv nella tabella TRIP
+Importa il file dataset/client.csv nella tabella CLIENT

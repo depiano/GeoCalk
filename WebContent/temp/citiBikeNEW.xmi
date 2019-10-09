@@ -1,0 +1,74 @@
+<uml:Model xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://schema.omg.org/spec/UML/2.1.1" xsi:schemaLocation="http://schema.omg.org/spec/UML/2.1.1 http://www.eclipse.org/uml2/2.0.0/UML" xmi:id="_XrSbENk5EdyEZoPpUv3LUw" name="Blank Model">
+<packageImport xmi:type="uml:PackageImport" xmi:id="_XrSbEdk5EdyEZoPpUv3LUw">
+<importedPackage xmi:type="uml:Model" href="http://schema.omg.org/spec/UML/2.1.1/uml.xml#_0"/>
+</packageImport>
+
+<packagedElement xmi:type="uml:Class" name="CLIENT" type="simple" x="50" y="90">
+<ownedAttribute xmi:type="uml:Property" name="ID" x="117" y="2" type="normal">
+<details key="PK"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="YearOfBirth" x="19" y="163" type="normal">
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="Type" x="132" y="165" type="normal">
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="Gender" x="12" y="15" type="normal">
+</ownedAttribute>
+</packagedElement>
+
+<packagedElement xmi:type="uml:Class" name="TRIP" type="weakEntity" x="450" y="90">
+<ownedAttribute xmi:type="uml:Property" name="ID" x="588" y="22" type="normal">
+<details key="PK"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="StartTimeAndDate" x="363" y="25" type="normal">
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="Duration" x="484" y="17" type="normal">
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="StopTimeAndDate" x="640" y="74" type="normal">
+</ownedAttribute>
+</packagedElement>
+
+<packagedElement xmi:type="uml:Class" name="BIKE" type="simple" x="708" y="253">
+<ownedAttribute xmi:type="uml:Property" name="ID" x="798" y="190" type="normal">
+<details key="PK"/>
+</ownedAttribute>
+</packagedElement>
+
+<packagedElement xmi:type="uml:Class" name="STATION" type="simple" x="460" y="359">
+<ownedAttribute xmi:type="uml:Property" name="ID" x="624" y="356" type="normal">
+<details key="PK"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="Name" x="592" y="298" type="normal">
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="Lat" x="508" y="434" type="normal">
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="Long" x="613" y="417" type="normal">
+</ownedAttribute>
+</packagedElement>
+
+<packagedElement xmi:type="uml:Class" name="Neighborhoods" type="spatial" x="178" y="451">
+<ownedAttribute xmi:type="uml:Property" name="Name" x="257" y="520" type="normal">
+<details key="PK"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="Geom" x="147" y="519" type="normal">
+</ownedAttribute>
+</packagedElement>
+
+<packagedElement xmi:type="uml:Class" name="Restaurants" type="simple" x="38" y="309">
+<ownedAttribute xmi:type="uml:Property" name="ID" x="127" y="249" type="normal">
+<details key="PK"/>
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="Lat" x="18" y="246" type="normal">
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="Name" x="198" y="346" type="normal">
+</ownedAttribute>
+<ownedAttribute xmi:type="uml:Property" name="Long" x="205" y="288" type="normal">
+</ownedAttribute>
+</packagedElement>
+
+<packagedElement xmi:type="uml:Association" xmi:id="CLIENT__TRIP" name="make" x="290"  y="82" />
+<packagedElement xmi:type="uml:Association" xmi:id="TRIP__BIKE" name="uses" x="705"  y="148" />
+<packagedElement xmi:type="uml:Association" xmi:id="TRIP__STATION" name="from" x="431"  y="215" />
+<packagedElement xmi:type="uml:Association" xmi:id="STATION__TRIP" name="to" x="542"  y="212" />
+<packagedElement xmi:type="uml:Association" xmi:id="STATION__Neighborhoods" name="located" x="322"  y="348" />
+<packagedElement xmi:type="uml:Association" xmi:id="Neighborhoods__Restaurants" name="placed" x="71"  y="390" />
+</uml:Model>

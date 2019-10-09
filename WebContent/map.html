@@ -1,0 +1,592 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+ 	<meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>GeoCalk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/2.1.0/joint.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<style>
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.container, .container > div, .container > div #map-canvas {
+    height: inherit;
+}
+</style>
+</head>
+
+<body onload="send();">
+    <div class="container">
+    
+      <div>
+       <div class="row">
+		    <div class="col col-lg-6" style="text-align:left;margin-top:5px;">
+		    	<a href="index.html"><img src="img/logo.png" /></a>
+		    </div>
+		</div>
+      	<div class="row">
+		    <div class="col col-lg-12" style="text-align:center;margin-top:20px;" id="alert">
+		  
+		   </div>
+		   	
+  		</div>
+        <div id="map-canvas"></div>
+        
+        <div class="row">
+        <div class="col col-lg-12" style="text-align:center;margin-top:20px;">
+		    Copyright &copy; 2019 GeoCalk. All Rights Reserved. Designed by <a href="http://www.depiano.it">Antonio De Piano</a>.
+		    <br/>
+		    Master’s Degree in Computer Science at the University of Salerno.
+    	</div>
+    </div>
+      </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+var map;
+
+function send()
+{
+
+	var link=new URLSearchParams(window.location.search);
+	var query = link.get('cod');
+	var param = link.get('param');
+	
+	$("#alert").append( "<div class='alert alert-success alert-dismissible fade show' role='alert'>"+
+			  "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>"+
+  "<span aria-hidden='true'>&times;</span>"+
+  "</button><strong>Query: </strong> "+query+"</div>" );
+
+	// Define the LatLng coordinates for the polygon's path.
+	/*
+	 var triangleCoords = [
+		    {lat: 25.774, lng: -80.190},
+		    {lat: 18.466, lng: -66.118},
+		    {lat: 32.321, lng: -64.757},
+		    {lat: 25.774, lng: -80.190}
+		  ];
+
+	 triangleCoords.push({lat: 25.004, lng: -80.00});
+	 
+		  // Construct the polygon.
+		  var bermudaTriangle = new google.maps.Polygon({
+		    paths: triangleCoords,
+		    strokeColor: '#FF0000',
+		    strokeOpacity: 0.8,
+		    strokeWeight: 2,
+		    fillColor: '#FF0000',
+		    fillOpacity: 0.35
+		  });
+		  bermudaTriangle.setMap(map);
+	*/
+	
+	var question=new Object();
+	question.database="mongodb";
+	question.query=query;
+	question.param=param;
+		
+	   //alert(JSON.stringify(question));
+		 $.ajax({
+             url: "Query",
+             type: 'GET',
+             data: { 
+                 elements: JSON.stringify(question)
+               },
+             dataType: "JSON",
+             contentType: 'application/json',
+             mimeType: 'application/json',
+             
+             success: function (jsonStr) {
+                   //alert(JSON.stringify(jsonStr));
+                   
+                if(jsonStr['query']=="Where is the station?")
+               	{
+                   
+                        var myLatLng = {lat: parseFloat(jsonStr['latitude']), lng: parseFloat(jsonStr['longitude'])};
+
+                           marker = new google.maps.Marker({
+                               position: myLatLng,
+                               map: map,
+                               title: jsonStr['stationName']
+                           });
+
+                         
+                               var contentString = '<div id="content">' +
+                                   '<div id="siteNotice">' +
+                                   '</div>' +
+                                   '<h3 id="firstHeading" class="firstHeading">'+jsonStr['stationName']+'</h3>' +
+                                   '<div id="bodyContent">' +
+                                   'Longitude: '+jsonStr['longitude']+'<br/>' +
+                                   'Latitudine: '+jsonStr['latitude']+'<br/>' +
+                                   '</div>'+
+                                   '</div>';
+
+                           var infowindow = new google.maps.InfoWindow()
+
+                           google.maps.event.addListener(marker,'click', (function(marker,contentString,infowindow){
+                               return function() {
+                                   infowindow.setContent(contentString);
+                                   infowindow.open(map,marker);
+                               };
+                           })(marker,contentString,infowindow));
+               	}
+                else if(jsonStr['query']=="prova")
+                {
+                	alert("prova!");
+                }
+                else if(jsonStr['query']=="All Stations")
+                {
+                	var district=jsonStr['result'];
+                	for(i=0;i<district.length;i++)
+                	{
+                		var elem=district[i];
+                		var name=elem['name'];
+                		var longitude=elem['longitude'];
+                		var latitude=elem['latitude'];
+                		
+                		
+                		var myLatLng = {lat: latitude, lng: longitude};
+
+                        marker = new google.maps.Marker({
+                            position: myLatLng,
+                            map: map,
+                            title: name
+                        });
+
+                      
+                           var contentString = '<div id="content">' +
+                                '<div id="siteNotice">' +
+                                '</div>' +
+                                '<h3 id="firstHeading" class="firstHeading">'+name+'</h3>' +
+                                '<div id="bodyContent">' +
+                                'Longitude: '+longitude+'<br/>' +
+                                'Latitudine: '+latitude+' <br/>' +
+                                '</div>'+
+                                '</div>';
+
+                        var infowindow = new google.maps.InfoWindow()
+
+                        google.maps.event.addListener(marker,'click', (function(marker,contentString,infowindow){
+                            return function() {
+                                infowindow.setContent(contentString);
+                                infowindow.open(map,marker);
+                            };
+                        })(marker,contentString,infowindow));
+                	}
+                }
+                else if(jsonStr['query']=="All Restaurants")
+                {
+                	var district=jsonStr['result'];
+                	for(i=0;i<district.length;i++)
+                	{
+                		var elem=district[i];
+                		var name=elem['name'];
+                		var coordinates=elem['coordinates'];
+                		var longitude=coordinates["longitude"];
+                		var latitude=coordinates['latitude'];
+                		
+                		
+                		var myLatLng = {lat: latitude, lng: longitude};
+
+                        marker = new google.maps.Marker({
+                            position: myLatLng,
+                            map: map,
+                            title: name,
+                            icon: 'http://maps.google.com/mapfiles/ms/micons/yellow.png'
+                        });
+
+                      
+                           var contentString = '<div id="content">' +
+                                '<div id="siteNotice">' +
+                                '</div>' +
+                                '<h3 id="firstHeading" class="firstHeading">'+name+'</h3>' +
+                                '<div id="bodyContent">' +
+                                'Longitude: '+longitude+'<br/>' +
+                                'Latitudine: '+latitude+' <br/>' +
+                                '</div>'+
+                                '</div>';
+
+                        var infowindow = new google.maps.InfoWindow()
+
+                        google.maps.event.addListener(marker,'click', (function(marker,contentString,infowindow){
+                            return function() {
+                                infowindow.setContent(contentString);
+                                infowindow.open(map,marker);
+                            };
+                        })(marker,contentString,infowindow));
+                	}
+                }
+
+                else if(jsonStr['query']=="Distance as crow flies between Exchange Place stations and Essex Light Rail station on map!")
+                {
+                	//alert("object 0: "+JSON.stringify(jsonStr['result']));
+                	//alert("length: "+jsonStr['result'].length);
+                	var i;
+                	for(i=0;i<jsonStr['result'].length;i++)
+                	{
+                		var elem=jsonStr['result'][i];
+	                	var name=elem['name'];
+	                	var longitude=elem['longitude'];
+	                	var latitude=elem['latitude'];
+	                	var id=elem['id'];
+	                	
+	                	 var myLatLng = {lat: parseFloat(latitude), lng: parseFloat(longitude)};
+
+                         marker = new google.maps.Marker({
+                             position: myLatLng,
+                             map: map,
+                             title: name
+                         });
+
+                       
+                             var contentString = '<div id="content">' +
+                                 '<div id="siteNotice">' +
+                                 '</div>' +
+                                 '<h3 id="firstHeading" class="firstHeading">'+name+'</h3>' +
+                                 '<div id="bodyContent">' +
+                                 'Longitude: '+longitude+'<br/>' +
+                                 'Latitudine: '+latitude+'<br/>' +
+                                 '</div>'+
+                                 '</div>';
+
+                         var infowindow = new google.maps.InfoWindow()
+
+                         google.maps.event.addListener(marker,'click', (function(marker,contentString,infowindow){
+                             return function() {
+                                 infowindow.setContent(contentString);
+                                 infowindow.open(map,marker);
+                             };
+                         })(marker,contentString,infowindow));
+                		//alert("name:"+elem['name']);
+                	}
+                	
+                	var ExchangePlace=jsonStr['result'][0];
+                	var EssexLightRail=jsonStr['result'][1];
+                	var flightPlanCoordinates = [
+                        {lat: ExchangePlace['latitude'], lng: ExchangePlace['longitude']},
+                        {lat: EssexLightRail['latitude'], lng: EssexLightRail['longitude']}
+                      ];
+                      var flightPath = new google.maps.Polyline({
+                        path: flightPlanCoordinates,
+                        geodesic: true,
+                        strokeColor: '#0066ff',
+                        strokeOpacity: 1.0,
+                        strokeWeight: 2
+                      });
+
+                      flightPath.setMap(map);
+                }
+                else if(jsonStr['query']=="Trip with longer duration between the Exchange Place departure station and the Harborside end station")
+                {
+                	var i;
+                	var str="";
+                	var elem;
+                	for(i=0;i<jsonStr['result'].length;i++)
+                	{
+                		var elem=jsonStr['result'][i];
+                		
+                		str="Start station name: "+elem['startStationName']+"; End station name: "+elem['endStationName']+
+                		"; Trip duration: "+elem['tripduration']+"; Start time: "+elem['starttime']+"; Stop time:"+elem['stoptime']+"; "+
+                		" Bike id: "+elem['bikeId']+"; User type: "+elem['userType']+"; ";
+                		
+                		if(elem['gender']=='0')
+                			str=str+"gender: unknown;";
+                		else if(elem['gender']=='1')
+                			str=str+"gender: male;";
+                		else if(elem['gender']=='2')
+                				str=str+"gender: female";
+                		
+                		str=str+" Birth year: "+elem['birthYear']+";";
+                		
+                		
+                		$("#alert").append( "<div class='alert alert-info alert-dismissible fade show' role='alert'>"+
+                				  "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>"+
+                	  "<span aria-hidden='true'>&times;</span>"+
+                	  "</button><strong>Result: </strong> "+str+"</div>" );
+                	}
+                	
+                	var myLatLng = {lat: parseFloat(elem['startStationLatitude']), lng: parseFloat(elem['startStationLongitude'])};
+
+                    marker = new google.maps.Marker({
+                        position: myLatLng,
+                        map: map,
+                        title: elem['startStationName']
+                    });
+
+                  
+                       var contentString = '<div id="content">' +
+                            '<div id="siteNotice">' +
+                            '</div>' +
+                            '<h3 id="firstHeading" class="firstHeading">'+elem['startStationName']+'</h3>' +
+                            '<div id="bodyContent">' +
+                            'Longitude: '+elem['startStationLongitude']+'<br/>' +
+                            'Latitudine: '+elem['startStationLatitude']+'<br/>' +
+                            '</div>'+
+                            '</div>';
+
+                    var infowindow = new google.maps.InfoWindow()
+
+                    google.maps.event.addListener(marker,'click', (function(marker,contentString,infowindow){
+                        return function() {
+                            infowindow.setContent(contentString);
+                            infowindow.open(map,marker);
+                        };
+                    })(marker,contentString,infowindow));
+           		
+           		
+                    myLatLng = {lat: parseFloat(elem['endStationLatitude']), lng: parseFloat(elem['endStationLongitude'])};
+
+                    marker = new google.maps.Marker({
+                        position: myLatLng,
+                        map: map,
+                        title: elem['endStationName']
+                    });
+
+                  
+                        contentString = '<div id="content">' +
+                            '<div id="siteNotice">' +
+                            '</div>' +
+                            '<h3 id="firstHeading" class="firstHeading">'+elem['endStationName']+'</h3>' +
+                            '<div id="bodyContent">' +
+                            'Longitude: '+elem['endStationLongitude']+'<br/>' +
+                            'Latitudine: '+elem['endStationLatitude']+'<br/>' +
+                            '</div>'+
+                            '</div>';
+
+
+                    google.maps.event.addListener(marker,'click', (function(marker,contentString,infowindow){
+                        return function() {
+                            infowindow.setContent(contentString);
+                            infowindow.open(map,marker);
+                        };
+                    })(marker,contentString,infowindow));
+           		
+                }
+                else if(jsonStr['query']=="In which neighborhood is the Riviera Caterer restaurant ?")
+                {
+                	var district=jsonStr['result'][0]['name'];
+                	//alert("name distric:"+district);
+                	
+                	str="The Riviera Caterer restaurant is located in the "+district+" neighborhood";
+                	$("#alert").append( "<div class='alert alert-info alert-dismissible fade show' role='alert'>"+
+          				  "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>"+
+		          	  "<span aria-hidden='true'>&times;</span>"+
+		          	  "</button><strong>Result: </strong> "+str+"</div>" );
+                	
+             		 
+             		// Define the LatLng coordinates for the polygon's path.
+             		
+             		
+             		var coordinatesPolygon=[];
+                	var i;
+                	for(i=0;i<jsonStr['result'][0]['pointList'].length;i++)
+                	{
+                		var latitude=jsonStr['result'][0]['pointList'][i]['latitude'];
+                		var longitude=jsonStr['result'][0]['pointList'][i]['longitude'];
+                		
+                		coordinatesPolygon.push({lat: latitude, lng: longitude});
+                		
+                		//alert("lat: "+latitude+" long:"+longitude);
+                	}
+                	
+                	var polygon = new google.maps.Polygon({
+         			    paths: coordinatesPolygon,
+         			    strokeColor: '#FF0000',
+         			    strokeOpacity: 0.8,
+         			    strokeWeight: 2,
+         			    fillColor: '#FF0000',
+         			    fillOpacity: 0.35
+         			  });
+         			  polygon.setMap(map);
+         			  
+         			  
+         			  //Inserisco il marker
+         			  
+         			 var myLatLng = {lat: 40.579505, lng: -73.98241999999999};
+
+                     marker = new google.maps.Marker({
+                         position: myLatLng,
+                         map: map,
+                         title: 'Riviera Caterer'
+                     });
+
+                   
+                        var contentString = '<div id="content">' +
+                             '<div id="siteNotice">' +
+                             '</div>' +
+                             '<h3 id="firstHeading" class="firstHeading">Riviera Caterer</h3>' +
+                             '<div id="bodyContent">' +
+                             'Longitude: -73.98241999999999<br/>' +
+                             'Latitudine: 40.579505 <br/>' +
+                             '</div>'+
+                             '</div>';
+
+                     var infowindow = new google.maps.InfoWindow()
+
+                     google.maps.event.addListener(marker,'click', (function(marker,contentString,infowindow){
+                         return function() {
+                             infowindow.setContent(contentString);
+                             infowindow.open(map,marker);
+                         };
+                     })(marker,contentString,infowindow));
+                }
+                else if(jsonStr['query']=="All Neighborhoods")
+                {
+                	 
+             		// Define the LatLng coordinates for the polygon's path.
+             		
+             		for(var j=0;j<jsonStr['result'].length;j++)
+             		{
+             			
+	             		
+	             		var coordinatesPolygon=[];
+	                	var i;
+	                	for(i=0;i<jsonStr['result'][j]['pointList'].length;i++)
+	                	{
+	                		var latitude=jsonStr['result'][j]['pointList'][i]['latitude'];
+	                		var longitude=jsonStr['result'][j]['pointList'][i]['longitude'];
+	                		
+	                		coordinatesPolygon.push({lat: latitude, lng: longitude});
+	                		
+	                		//alert("lat: "+latitude+" long:"+longitude);
+	                	}
+	                	
+	                	if(j%2==0)
+	                		{
+	                		var polygon = new google.maps.Polygon({
+		         			    paths: coordinatesPolygon,
+		         			    strokeColor: '#FF0000',
+		         			    strokeOpacity: 0.8,
+		         			    strokeWeight: 2,
+		         			    fillColor: '#FF0000',
+		         			    fillOpacity: 0.35
+		         			  });
+		         			  polygon.setMap(map);
+	                		}
+	                	else
+	                		{
+	                		var polygon = new google.maps.Polygon({
+		         			    paths: coordinatesPolygon,
+		         			    strokeColor: '#eddc23',
+		         			    strokeOpacity: 0.8,
+		         			    strokeWeight: 2,
+		         			    fillColor: '#eddc23',
+		         			    fillOpacity: 0.35
+		         			  });
+		         			  polygon.setMap(map);
+	                		}
+	                	
+	         			  
+             		}
+         			 
+                }
+                else if(jsonStr['query']=="What are the restaurant within a radius of 500.0m to 1000.0m from Riviera Caterer restaurant ?")
+                {
+                	var district=jsonStr['result'];
+                	var str="";
+                	var j=0;
+                	var i;
+                	
+                	var myLatLng = {lat: 40.579505, lng: -73.98241999999999};
+
+                    var marker = new google.maps.Marker({
+                        position: myLatLng,
+                        map: map,
+                        title: 'Riviera Caterer',
+                        icon: 'http://maps.google.com/mapfiles/ms/micons/green.png'
+                    });
+
+                  
+                       var contentString = '<div id="content">' +
+                            '<div id="siteNotice">' +
+                            '</div>' +
+                            '<h3 id="firstHeading" class="firstHeading">Riviera Caterer</h3>' +
+                            '<div id="bodyContent">' +
+                            'Longitude: -73.98241999999999<br/>' +
+                            'Latitudine: 40.579505 <br/>' +
+                            '</div>'+
+                            '</div>';
+
+                    var infowindow = new google.maps.InfoWindow()
+
+                    google.maps.event.addListener(marker,'click', (function(marker,contentString,infowindow){
+                        return function() {
+                            infowindow.setContent(contentString);
+                            infowindow.open(map,marker);
+                        };
+                    })(marker,contentString,infowindow));
+                    
+                	for(i=0;i<district.length;i++)
+                	{
+                		var elem=district[i];
+                		var name=elem['name'];
+                		var coordinate=elem['coordinates'];
+                		var longitude=coordinate['longitude'];
+                		var latitude=coordinate['latitude'];
+                		
+                		
+                		var myLatLng = {lat: latitude, lng: longitude};
+
+                        marker = new google.maps.Marker({
+                            position: myLatLng,
+                            map: map,
+                            title: name
+                        });
+
+                      
+                           var contentString = '<div id="content">' +
+                                '<div id="siteNotice">' +
+                                '</div>' +
+                                '<h3 id="firstHeading" class="firstHeading">'+name+'</h3>' +
+                                '<div id="bodyContent">' +
+                                'Longitude: '+longitude+'<br/>' +
+                                'Latitudine: '+latitude+' <br/>' +
+                                '</div>'+
+                                '</div>';
+
+                        var infowindow = new google.maps.InfoWindow()
+
+                        google.maps.event.addListener(marker,'click', (function(marker,contentString,infowindow){
+                            return function() {
+                                infowindow.setContent(contentString);
+                                infowindow.open(map,marker);
+                            };
+                        })(marker,contentString,infowindow));
+                	}
+                	
+                	$("#alert").append( "<div class='alert alert-info alert-dismissible fade show' role='alert'>"+
+          				  "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>"+
+		          	  "<span aria-hidden='true'>&times;</span>"+
+		          	  "</button><strong>Result: </strong> "+district.length+" restaurants!</div>" );
+                	
+                }
+             }
+         }); 
+	}
+
+function initializeMap() {
+	  console.log('initialize');
+	  var myOptions = {
+	    center: new google.maps.LatLng(40.728157, -74.077644),
+	    zoom: 12,
+	    mapTypeId: google.maps.MapTypeId.ROADMAP
+	  };
+	  map = new google.maps.Map(document.getElementById("map-canvas"),
+	    myOptions);
+}
+
+</script>
+
+ <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmHJRiCR5sZ2jTMxkTIqZDQa6GV4hMzYg&callback=initializeMap"
+  type="text/javascript"></script>
+</html>
