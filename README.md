@@ -10,4 +10,4 @@ L'ambiente visuale può essere utilizzato per monitorare il processo di integraz
 
 Il dominio scelto è il Bike Sharing, perchè i dati non solo presentano una componente temporale e spaziale, ma hanno anche un forte impatto in altri domini, ad esempio, la mobilità sostenibile e l'ambiente.
 
-Pertanto, è possibile eseguite interrogazioni spaziali & Geo Visual Analytics per generare nuova conoscenza!
+Tuttavia, è possibile eseguite interrogazioni spaziali & Geo Visual Analytics per generare nuova conoscenza!
